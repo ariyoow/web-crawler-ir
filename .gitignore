@@ -1,0 +1,16 @@
+# Virtual environments 
+venv/
+.venv/
+
+#Python
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+
+# Data / Vector DB
+.pytest_cache/
+
+# OS
+.DS_Store
