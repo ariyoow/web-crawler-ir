@@ -44,3 +44,6 @@ dist/
 # Crawler output (downloaded HTML pages)
 data/pages/
 data/metadata/
+
+# bat file
+start.bat

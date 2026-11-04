@@ -29,4 +29,5 @@ output/
 - [requests / urllib] + [BeautifulSoup / lxml]
 
 ## Usage
+pip install -r requirements.txt
 python crawler.py --start-url https://example.com --max-pages 100
