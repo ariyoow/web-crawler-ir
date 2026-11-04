@@ -1,16 +1,46 @@
-# Virtual environments 
-venv/
-.venv/
-
-#Python
+# Python cache
 __pycache__/
 *.py[cod]
+*$py.class
 
-# Environment variables
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
 
-# Data / Vector DB
-.pytest_cache/
+# IDE and Editor
+.vscode/
+.idea/
 
-# OS
+# Operating System
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Test and Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build and Distribution
+build/
+dist/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Crawler output (downloaded HTML pages)
+data/pages/
+data/metadata/
