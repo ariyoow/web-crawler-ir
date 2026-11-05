@@ -1,0 +1,5 @@
+# HTTP request and Downloading HTML
+requests==2.32.3
+
+# for Parse the HTML and extract URL 
+beautifulsoup4==4.12.3
