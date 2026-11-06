@@ -50,3 +50,7 @@ start.bat
 
 # personal files
 interest_tool.txt
+
+
+# empty folder
+.gitkeep
