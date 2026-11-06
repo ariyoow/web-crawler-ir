@@ -7,6 +7,8 @@ class URLChecker:
         """
         Convert relative URLs to absolute URLs and normalize them.
         """
+        if not isinstance(url, str) or not url.strip():
+            return None
 
         try:
             # Convert relative URL to absolute URL
