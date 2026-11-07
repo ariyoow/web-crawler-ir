@@ -1,6 +1,7 @@
 
 import json
 import re
+import tempfile
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -113,19 +114,31 @@ class Storage:
 
         return f"page_{max_number + 1:04d}"
 
+    # def _write_temp_file(self, directory, content):
+    #     temp_path = directory / f".tmp_{datetime.now(timezone.utc).timestamp()}"
+
+    #     # Avoid accidental overwriting of an existing temporary file.
+    #     counter = 0
+    #     while temp_path.exists():
+    #         counter += 1
+    #         temp_path = directory / (
+    #             f".tmp_{datetime.now(timezone.utc).timestamp()}_{counter}"
+    #         )
+
+    #     temp_path.write_text(content, encoding="utf-8")
+    #     return temp_path
+
     def _write_temp_file(self, directory, content):
-        temp_path = directory / f".tmp_{datetime.now(timezone.utc).timestamp()}"
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=directory,
+            prefix=".tmp_",
+            delete=False
+        ) as temp_file:
+            temp_file.write(content)
 
-        # Avoid accidental overwriting of an existing temporary file.
-        counter = 0
-        while temp_path.exists():
-            counter += 1
-            temp_path = directory / (
-                f".tmp_{datetime.now(timezone.utc).timestamp()}_{counter}"
-            )
-
-        temp_path.write_text(content, encoding="utf-8")
-        return temp_path
+        return Path(temp_file.name)
 
     def _validate_page_id(self, page_id):
         if not isinstance(page_id, str) or not re.fullmatch(
