@@ -1,7 +1,7 @@
 # Crawler Configuration
 
 # Initial URL
-SEED_URL = "https://www.digikala.com/"
+SEED_URL = "https://www.technolife.com/"
 
 # Crawling Limits
 MAX_PAGES = 1000
