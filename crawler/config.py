@@ -13,9 +13,11 @@ REQUEST_DELAY = 1
 
 # Crawler Settings
 USER_AGENT = "SimpleWebCrawler/1.0"
-ALLOWED_SUBDOMAINS = True
+# ALLOWED_SUBDOMAINS = True
 
 # Storage Paths
 PAGES_DIR = "data/pages"
 METADATA_DIR = "data/metadata"
 LOGS_DIR = "logs"
+
+STATS_PATH = "data/stats.json"
