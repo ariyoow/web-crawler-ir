@@ -18,6 +18,7 @@ class FetchResult:
 
 
 class Fetcher:
+
     def __init__(self, timeout, max_retries, user_agent):
         self.timeout = timeout
         self.max_retries = max_retries
@@ -28,15 +29,81 @@ class Fetcher:
         })
 
     def fetch(self, url):
+
         for attempt in range(self.max_retries + 1):
+
+            response = None
 
             try:
                 response = self.session.get(
                     url,
-                    timeout=self.timeout
+                    timeout=self.timeout,
+                    stream=True
+                )
+
+                content_type = response.headers.get("Content-Type", "")
+                status_code = response.status_code
+
+                # Retry for temporary HTTP errors
+                if status_code in (408, 429) or status_code >= 500:
+
+                    if attempt < self.max_retries:
+                        time.sleep(2 ** attempt)
+                        continue
+
+                    return FetchResult(
+                        url=url,
+                        final_url=response.url,
+                        html=None,
+                        status_code=status_code,
+                        content_type=content_type,
+                        success=False,
+                        error=f"HTTP Error: {status_code}"
+                    )
+
+                # Handle permanent HTTP errors
+                if not response.ok:
+                    return FetchResult(
+                        url=url,
+                        final_url=response.url,
+                        html=None,
+                        status_code=status_code,
+                        content_type=content_type,
+                        success=False,
+                        error=f"HTTP Error: {status_code}"
+                    )
+
+                # Check Content-Type before downloading the body
+                content_type_lower = content_type.lower()
+
+                if not (
+                    "text/html" in content_type_lower
+                    or "application/xhtml+xml" in content_type_lower
+                ):
+                    return FetchResult(
+                        url=url,
+                        final_url=response.url,
+                        html=None,
+                        status_code=status_code,
+                        content_type=content_type,
+                        success=False,
+                        error="Unsupported Content-Type"
+                    )
+
+                # Read HTML body
+                html = response.text
+
+                return FetchResult(
+                    url=url,
+                    final_url=response.url,
+                    html=html,
+                    status_code=status_code,
+                    content_type=content_type,
+                    success=True
                 )
 
             except (requests.Timeout, requests.ConnectionError) as exc:
+
                 if attempt < self.max_retries:
                     time.sleep(2 ** attempt)
                     continue
@@ -62,63 +129,9 @@ class Fetcher:
                     error=str(exc)
                 )
 
-            content_type = response.headers.get("Content-Type", "")
-            status_code = response.status_code
-
-            # Retry for temporary HTTP errors
-            if status_code in (408, 429) or status_code >= 500:
-                if attempt < self.max_retries:
-                    time.sleep(2 ** attempt)
-                    continue
-
-                return FetchResult(
-                    url=url,
-                    final_url=response.url,
-                    html=None,
-                    status_code=status_code,
-                    content_type=content_type,
-                    success=False,
-                    error=f"HTTP Error: {status_code}"
-                )
-
-            # Handle permanent HTTP errors
-            if not response.ok:
-                return FetchResult(
-                    url=url,
-                    final_url=response.url,
-                    html=None,
-                    status_code=status_code,
-                    content_type=content_type,
-                    success=False,
-                    error=f"HTTP Error: {status_code}"
-                )
-
-            # Check response content type
-            content_type_lower = content_type.lower()
-
-            if not (
-                "text/html" in content_type_lower
-                or "application/xhtml+xml" in content_type_lower
-            ):
-                return FetchResult(
-                    url=url,
-                    final_url=response.url,
-                    html=None,
-                    status_code=status_code,
-                    content_type=content_type,
-                    success=False,
-                    error="Unsupported Content-Type"
-                )
-
-            # Successful response
-            return FetchResult(
-                url=url,
-                final_url=response.url,
-                html=response.text,
-                status_code=status_code,
-                content_type=content_type,
-                success=True
-            )
+            finally:
+                if response is not None:
+                    response.close()
 
     def close(self):
         self.session.close()
