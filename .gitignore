@@ -44,6 +44,7 @@ dist/
 # Crawler output (downloaded HTML pages)
 data/pages/
 data/metadata/
+data/
 
 # bat file
 start.bat
@@ -54,3 +55,4 @@ interest_tool.txt
 
 # empty folder
 .gitkeep
+
