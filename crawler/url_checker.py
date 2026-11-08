@@ -16,6 +16,9 @@ class URLChecker:
 
             parsed = urlsplit(url)
 
+            if parsed.username is not None or parsed.password is not None:
+                return None
+
             # Normalize scheme and hostname
             scheme = parsed.scheme.lower()
             hostname = parsed.hostname
