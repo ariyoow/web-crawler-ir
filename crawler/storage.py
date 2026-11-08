@@ -22,6 +22,7 @@ class Storage:
 
         self.pages_dir.mkdir(parents=True, exist_ok=True)
         self.metadata_dir.mkdir(parents=True, exist_ok=True)
+        self._next_page_number = self._find_max_page_number() + 1
 
     def save_page(self, fetch_result):
         if not fetch_result.success:
@@ -29,6 +30,8 @@ class Storage:
 
         if not fetch_result.html:
             raise ValueError("Cannot save an empty HTML page.")
+
+        # page_id = self._get_next_page_id()
 
         page_id = self._get_next_page_id()
 
@@ -79,6 +82,8 @@ class Storage:
 
             raise
 
+        self._next_page_number += 1
+
         return StorageResult(
             page_id=page_id,
             html_path=html_path,
@@ -100,7 +105,7 @@ class Storage:
         with metadata_path.open("r", encoding="utf-8") as file:
             return json.load(file)
 
-    def _get_next_page_id(self):
+    def _find_max_page_number(self):
         pattern = re.compile(r"^page_(\d+)$")
         max_number = 0
 
@@ -112,7 +117,25 @@ class Storage:
                     number = int(match.group(1))
                     max_number = max(max_number, number)
 
-        return f"page_{max_number + 1:04d}"
+        return max_number
+
+
+    def _get_next_page_id(self):
+        return f"page_{self._next_page_number:04d}"
+
+    # def _get_next_page_id(self):
+    #     pattern = re.compile(r"^page_(\d+)$")
+    #     max_number = 0
+
+    #     for directory in (self.pages_dir, self.metadata_dir):
+    #         for file_path in directory.iterdir():
+    #             match = pattern.match(file_path.stem)
+
+    #             if match:
+    #                 number = int(match.group(1))
+    #                 max_number = max(max_number, number)
+
+    #     return f"page_{max_number + 1:04d}"
 
     # def _write_temp_file(self, directory, content):
     #     temp_path = directory / f".tmp_{datetime.now(timezone.utc).timestamp()}"
