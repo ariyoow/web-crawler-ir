@@ -178,10 +178,10 @@ class Crawler:
     def _record_failure(self, result):
         self.stats["failed_requests"] += 1
 
-        if result.status_code:
-            reason = f"HTTP {result.status_code}"
-        elif result.error == "Unsupported Content-Type":
+        if result.error == "Unsupported Content-Type":
             reason = "Unsupported Content-Type"
+        elif result.status_code:
+            reason = f"HTTP {result.status_code}"
         else:
             reason = "Network error"
 
